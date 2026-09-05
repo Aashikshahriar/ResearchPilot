@@ -1,0 +1,6 @@
+# Optional heavy dependencies for real CLIP-based figure classification.
+# Install with: pip install -r requirements-vision.txt
+# Not installed by default in the Docker image to keep it lightweight;
+# set VISION_PROVIDER=clip and install these to enable real inference.
+torch==2.4.1
+transformers==4.44.2

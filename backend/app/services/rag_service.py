@@ -93,6 +93,7 @@ def answer_question(
         result = llm.generate(RAG_SYSTEM_PROMPT, user_prompt)
         record["prompt_tokens"] = result.prompt_tokens
         record["completion_tokens"] = result.completion_tokens
+        record["model"] = result.model
 
     if conversation_id:
         conversation = db.get(Conversation, conversation_id)

@@ -14,7 +14,7 @@ def log_inference(db: Session, *, operation: str, provider: str, model: str, use
     persistence details."""
 
     start = time.perf_counter()
-    record = {"prompt_tokens": None, "completion_tokens": None, "confidence": None}
+    record = {"prompt_tokens": None, "completion_tokens": None, "confidence": None, "model": None}
     success = True
     error_message = None
     try:
@@ -30,7 +30,7 @@ def log_inference(db: Session, *, operation: str, provider: str, model: str, use
                 user_id=user_id,
                 operation=operation,
                 provider=provider,
-                model=model,
+                model=record.get("model") or model,
                 latency_ms=latency_ms,
                 prompt_tokens=record.get("prompt_tokens"),
                 completion_tokens=record.get("completion_tokens"),

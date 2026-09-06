@@ -89,6 +89,7 @@ def _generate_chunks_and_embeddings(db: Session, paper: Paper, sections: list[Pa
         with log_inference(db, operation="embed", provider=llm.name, model=getattr(llm, "embedding_model", llm.name)) as record:
             embeddings = llm.embed(pieces)
             record["prompt_tokens"] = sum(len(p.split()) for p in pieces)
+            record["model"] = embeddings.model
 
         for text, vector in zip(pieces, embeddings.vectors):
             db.add(
@@ -147,5 +148,6 @@ def generate_summary(db: Session, paper: Paper, raw_text: str) -> None:
         result = llm.generate(system_prompt, truncated)
         record["prompt_tokens"] = result.prompt_tokens
         record["completion_tokens"] = result.completion_tokens
+        record["model"] = result.model
     paper.ai_summary = result.text
     db.flush()

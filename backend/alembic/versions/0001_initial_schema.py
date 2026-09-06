@@ -21,15 +21,20 @@ EMBEDDING_DIM = 1536
 def upgrade() -> None:
     op.execute("CREATE EXTENSION IF NOT EXISTS vector")
 
+    # create_type=False: these ENUMs are created explicitly below via .create().
+    # Without it, op.create_table() would try to CREATE TYPE again itself for
+    # every column that references the enum, raising DuplicateObject.
     processing_status = postgresql.ENUM(
-        "uploaded", "processing", "ready", "failed", name="processing_status"
+        "uploaded", "processing", "ready", "failed", name="processing_status", create_type=False
     )
     figure_type = postgresql.ENUM(
         "architecture_diagram", "flowchart", "graph_plot", "table",
-        "microscopy_image", "mathematical_figure", "other", name="figure_type",
+        "microscopy_image", "mathematical_figure", "other", name="figure_type", create_type=False,
     )
-    message_role = postgresql.ENUM("user", "assistant", name="message_role")
-    analysis_type = postgresql.ENUM("summary", "comparison", "metadata_extraction", name="analysis_type")
+    message_role = postgresql.ENUM("user", "assistant", name="message_role", create_type=False)
+    analysis_type = postgresql.ENUM(
+        "summary", "comparison", "metadata_extraction", name="analysis_type", create_type=False
+    )
 
     bind = op.get_bind()
     processing_status.create(bind, checkfirst=True)

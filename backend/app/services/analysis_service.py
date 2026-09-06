@@ -50,6 +50,7 @@ def compare_papers(db: Session, paper_ids: list[uuid.UUID]) -> Analysis:
         result = llm.generate_structured(COMPARE_SYSTEM_PROMPT, context, COMPARISON_SCHEMA)
         record["prompt_tokens"] = result.prompt_tokens
         record["completion_tokens"] = result.completion_tokens
+        record["model"] = result.model
 
     analysis = Analysis(
         paper_id=None,

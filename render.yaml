@@ -1,0 +1,48 @@
+services:
+  - type: web
+    name: researchpilot-backend
+    runtime: docker
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    plan: free
+    envVars:
+      - key: DATABASE_URL
+        sync: false # set to your Neon/Supabase connection string (must support pgvector)
+      - key: JWT_SECRET_KEY
+        generateValue: true
+      - key: JWT_ALGORITHM
+        value: HS256
+      - key: ACCESS_TOKEN_EXPIRE_MINUTES
+        value: "1440"
+      - key: LLM_PROVIDER
+        value: mock
+      - key: LLM_FALLBACK_ORDER
+        value: ""
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: MISTRAL_API_KEY
+        sync: false
+      - key: GROQ_API_KEY
+        sync: false
+      - key: EMBEDDING_DIM
+        value: "1536"
+      - key: VISION_PROVIDER
+        value: mock
+      - key: ENVIRONMENT
+        value: production
+      - key: BACKEND_CORS_ORIGINS
+        sync: false # set to your deployed Vercel frontend URL, e.g. https://researchpilot.vercel.app
+      - key: MAX_UPLOAD_MB
+        value: "25"
+      - key: STORAGE_DIR
+        value: /app/storage
+    # NOTE: Render's free plan has no persistent disk -- /app/storage (uploaded
+    # PDFs + extracted figures) is wiped on every restart/redeploy there.
+    # Uncomment this block (requires the paid Starter plan or higher) for
+    # storage that survives restarts:
+    # disk:
+    #   name: researchpilot-storage
+    #   mountPath: /app/storage
+    #   sizeGB: 1

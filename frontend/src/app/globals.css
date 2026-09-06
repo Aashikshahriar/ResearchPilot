@@ -6,28 +6,36 @@
   color-scheme: light;
 }
 
+:root.dark {
+  color-scheme: dark;
+}
+
 body {
-  @apply bg-slate-50 text-ink-900 antialiased;
+  @apply bg-slate-50 text-ink-900 antialiased transition-colors dark:bg-ink-900 dark:text-slate-100;
 }
 
 ::selection {
-  @apply bg-brand-200;
+  @apply bg-brand-200 dark:bg-brand-700;
 }
 
 .card {
-  @apply rounded-xl border border-slate-200 bg-white shadow-card;
+  @apply rounded-xl border border-slate-200 bg-white shadow-card dark:border-ink-700 dark:bg-ink-800;
 }
 
 .btn-primary {
-  @apply inline-flex items-center justify-center rounded-lg bg-brand-500 px-4 py-2 text-sm font-medium text-white transition hover:bg-brand-600 disabled:cursor-not-allowed disabled:opacity-50;
+  @apply inline-flex items-center justify-center rounded-lg bg-gradient-to-r from-brand-500 to-accent-500 px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:from-brand-600 hover:to-accent-600 disabled:cursor-not-allowed disabled:opacity-50;
 }
 
 .btn-secondary {
-  @apply inline-flex items-center justify-center rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-ink-800 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50;
+  @apply inline-flex items-center justify-center rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-ink-800 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-ink-600 dark:bg-ink-800 dark:text-slate-100 dark:hover:bg-ink-700;
+}
+
+.btn-ghost {
+  @apply inline-flex items-center justify-center rounded-lg px-3 py-2 text-sm font-medium text-ink-700 transition hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-ink-700;
 }
 
 .input {
-  @apply w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none transition focus:border-brand-400 focus:ring-2 focus:ring-brand-100;
+  @apply w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-ink-900 outline-none transition focus:border-brand-400 focus:ring-2 focus:ring-brand-100 dark:border-ink-600 dark:bg-ink-700 dark:text-slate-100 dark:focus:ring-brand-800;
 }
 
 .badge {

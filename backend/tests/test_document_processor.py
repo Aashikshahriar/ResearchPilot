@@ -8,10 +8,12 @@ def test_chunk_text_splits_long_text_with_overlap():
     chunks = chunk_text(text, chunk_size=800, overlap=150)
 
     assert len(chunks) > 1
-    # Overlap: the tail of one chunk should reappear at the head of the next.
-    first_tail = chunks[0].split()[-10:]
-    second_head = chunks[1].split()[:10]
-    assert first_tail[-1] in second_head or set(first_tail) & set(second_head)
+    # step = chunk_size - overlap = 650, so chunk[1] starts at word650 while
+    # chunk[0] runs through word799 -- the overlapping region is word650-799.
+    first_words = set(chunks[0].split())
+    second_words = set(chunks[1].split())
+    overlap_words = first_words & second_words
+    assert overlap_words == {f"word{i}" for i in range(650, 800)}
 
 
 def test_chunk_text_handles_empty_input():

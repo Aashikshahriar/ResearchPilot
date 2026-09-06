@@ -23,26 +23,26 @@ function SearchContent() {
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <h1 className="text-2xl font-semibold text-ink-900">Search results for &ldquo;{q}&rdquo;</h1>
+        <h1 className="text-2xl font-semibold text-ink-900 dark:text-slate-100">Search results for &ldquo;{q}&rdquo;</h1>
       </div>
 
       {isLoading ? (
-        <div className="text-sm text-ink-600">Searching...</div>
+        <div className="text-sm text-ink-600 dark:text-slate-400">Searching...</div>
       ) : !data || data.length === 0 ? (
         <EmptyState title="No results found" description="Try a different search term." />
       ) : (
-        <div className="card divide-y divide-slate-100">
+        <div className="card divide-y divide-slate-100 dark:divide-ink-700">
           {data.map((r) => (
             <Link
               key={`${r.type}-${r.id}`}
               href={r.paper_id ? `/papers/${r.paper_id}` : "#"}
-              className="flex flex-col gap-1 px-5 py-4 hover:bg-slate-50"
+              className="flex flex-col gap-1 px-5 py-4 hover:bg-slate-50 dark:hover:bg-ink-700"
             >
               <div className="flex items-center gap-2">
-                <span className="badge bg-brand-50 text-brand-700">{TYPE_LABELS[r.type]}</span>
-                <span className="font-medium text-ink-900">{r.title}</span>
+                <span className="badge bg-brand-50 text-brand-700 dark:bg-brand-900/40 dark:text-brand-300">{TYPE_LABELS[r.type]}</span>
+                <span className="font-medium text-ink-900 dark:text-slate-100">{r.title}</span>
               </div>
-              {r.snippet && <p className="text-sm text-ink-600">{r.snippet}</p>}
+              {r.snippet && <p className="text-sm text-ink-600 dark:text-slate-400">{r.snippet}</p>}
             </Link>
           ))}
         </div>

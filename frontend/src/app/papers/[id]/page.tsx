@@ -40,23 +40,23 @@ function PaperDetailContent({ id }: { id: string }) {
   });
 
   if (isLoading || !paper) {
-    return <div className="text-sm text-ink-600">Loading paper...</div>;
+    return <div className="text-sm text-ink-600 dark:text-slate-400">Loading paper...</div>;
   }
 
   return (
     <div className="flex flex-col gap-6">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-semibold text-ink-900">{paper.title || paper.filename}</h1>
+          <h1 className="text-2xl font-semibold text-ink-900 dark:text-slate-100">{paper.title || paper.filename}</h1>
           <div className="mt-2 flex items-center gap-3">
             <StatusBadge status={paper.status} />
             {paper.authors && paper.authors.length > 0 && (
-              <span className="text-sm text-ink-600">{paper.authors.join(", ")}</span>
+              <span className="text-sm text-ink-600 dark:text-slate-400">{paper.authors.join(", ")}</span>
             )}
           </div>
         </div>
         <button
-          className="btn-secondary text-red-600"
+          className="btn-secondary text-red-600 dark:text-red-400"
           onClick={() => {
             if (confirm("Delete this paper? This cannot be undone.")) deletePaper.mutate();
           }}
@@ -66,24 +66,26 @@ function PaperDetailContent({ id }: { id: string }) {
       </div>
 
       {paper.status === "failed" && (
-        <div className="card border-red-200 bg-red-50 p-4 text-sm text-red-700">
+        <div className="card border-red-200 bg-red-50 p-4 text-sm text-red-700 dark:border-red-900/50 dark:bg-red-950/40 dark:text-red-300">
           Processing failed: {paper.processing_error || "Unknown error."}
         </div>
       )}
       {(paper.status === "uploaded" || paper.status === "processing") && (
-        <div className="card border-amber-200 bg-amber-50 p-4 text-sm text-amber-700">
+        <div className="card border-amber-200 bg-amber-50 p-4 text-sm text-amber-700 dark:border-amber-900/50 dark:bg-amber-950/40 dark:text-amber-300">
           This paper is still being processed — sections, embeddings, and figures will appear shortly.
         </div>
       )}
 
-      <div className="flex gap-1 border-b border-slate-200">
+      <div className="flex gap-1 border-b border-slate-200 dark:border-ink-700">
         {TABS.map((t) => (
           <button
             key={t}
             onClick={() => setTab(t)}
             className={clsx(
               "border-b-2 px-4 py-2 text-sm font-medium transition",
-              tab === t ? "border-brand-500 text-brand-700" : "border-transparent text-ink-600 hover:text-ink-900"
+              tab === t
+                ? "border-brand-500 text-brand-700 dark:text-brand-400"
+                : "border-transparent text-ink-600 hover:text-ink-900 dark:text-slate-400 dark:hover:text-slate-100"
             )}
           >
             {t}

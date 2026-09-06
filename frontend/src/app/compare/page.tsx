@@ -42,13 +42,13 @@ function CompareContent() {
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <h1 className="text-2xl font-semibold text-ink-900">Compare Papers</h1>
-        <p className="mt-1 text-sm text-ink-600">Select two papers to generate a structured, side-by-side comparison.</p>
+        <h1 className="text-2xl font-semibold text-ink-900 dark:text-slate-100">Compare Papers</h1>
+        <p className="mt-1 text-sm text-ink-600 dark:text-slate-400">Select two papers to generate a structured, side-by-side comparison.</p>
       </div>
 
       <div className="card grid grid-cols-1 gap-4 p-5 sm:grid-cols-2">
         <div>
-          <label className="mb-1 block text-sm font-medium text-ink-800">Paper A</label>
+          <label className="mb-1 block text-sm font-medium text-ink-800 dark:text-slate-300">Paper A</label>
           <select className="input" value={paperA} onChange={(e) => setPaperA(e.target.value)}>
             <option value="">Select a paper...</option>
             {papers?.map((p) => (
@@ -59,7 +59,7 @@ function CompareContent() {
           </select>
         </div>
         <div>
-          <label className="mb-1 block text-sm font-medium text-ink-800">Paper B</label>
+          <label className="mb-1 block text-sm font-medium text-ink-800 dark:text-slate-300">Paper B</label>
           <select className="input" value={paperB} onChange={(e) => setPaperB(e.target.value)}>
             <option value="">Select a paper...</option>
             {papers?.map((p) => (
@@ -73,7 +73,7 @@ function CompareContent() {
           <button className="btn-primary" onClick={run} disabled={compare.isPending}>
             {compare.isPending ? "Comparing..." : "Compare"}
           </button>
-          {error && <p className="mt-2 text-sm text-red-600">{error}</p>}
+          {error && <p className="mt-2 text-sm text-red-600 dark:text-red-400">{error}</p>}
         </div>
       </div>
 
@@ -81,8 +81,8 @@ function CompareContent() {
         <div className="grid grid-cols-1 gap-4">
           {FIELDS.map((f) => (
             <div key={f.key} className="card p-5">
-              <h2 className="font-semibold text-ink-900">{f.label}</h2>
-              <p className="mt-2 whitespace-pre-line text-sm text-ink-700">{compare.data.comparison[f.key]}</p>
+              <h2 className="font-semibold text-ink-900 dark:text-slate-100">{f.label}</h2>
+              <p className="mt-2 whitespace-pre-line text-sm text-ink-700 dark:text-slate-300">{compare.data.comparison[f.key]}</p>
             </div>
           ))}
         </div>

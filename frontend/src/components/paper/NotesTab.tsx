@@ -20,9 +20,9 @@ export function NotesTab({ paperId }: { paperId: string }) {
   return (
     <div className="card p-5">
       <div className="mb-3 flex items-center justify-between">
-        <h2 className="font-semibold text-ink-900">Your notes</h2>
+        <h2 className="font-semibold text-ink-900 dark:text-slate-100">Your notes</h2>
         <div className="flex items-center gap-3">
-          {savedAt && <span className="text-xs text-ink-600">Saved {savedAt.toLocaleTimeString()}</span>}
+          {savedAt && <span className="text-xs text-ink-600 dark:text-slate-400">Saved {savedAt.toLocaleTimeString()}</span>}
           <button className="btn-secondary" onClick={save}>
             Save
           </button>
@@ -34,7 +34,7 @@ export function NotesTab({ paperId }: { paperId: string }) {
         value={notes}
         onChange={(e) => setNotes(e.target.value)}
       />
-      <p className="mt-2 text-xs text-ink-500">Notes are stored locally in your browser for this paper.</p>
+      <p className="mt-2 text-xs text-ink-500 dark:text-slate-500">Notes are stored locally in your browser for this paper.</p>
     </div>
   );
 }

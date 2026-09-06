@@ -28,7 +28,7 @@ export function FiguresTab({ paperId }: { paperId: string }) {
     queryFn: () => api.get<Figure[]>(`/api/papers/${paperId}/figures`),
   });
 
-  if (isLoading) return <div className="text-sm text-ink-600">Loading figures...</div>;
+  if (isLoading) return <div className="text-sm text-ink-600 dark:text-slate-400">Loading figures...</div>;
 
   if (!data || data.length === 0) {
     return (
@@ -44,22 +44,22 @@ export function FiguresTab({ paperId }: { paperId: string }) {
       {data.map((fig, idx) => (
         <div key={fig.id} className="card overflow-hidden">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={toStaticUrl(fig.image_path)} alt={`Figure ${idx + 1}`} className="max-h-72 w-full bg-slate-50 object-contain" />
+          <img src={toStaticUrl(fig.image_path)} alt={`Figure ${idx + 1}`} className="max-h-72 w-full bg-slate-50 object-contain dark:bg-ink-700" />
           <div className="p-4">
             <div className="flex items-center justify-between">
-              <h3 className="font-semibold text-ink-900">Figure {idx + 1}</h3>
-              <span className="text-xs text-ink-600">p.{fig.page_number}</span>
+              <h3 className="font-semibold text-ink-900 dark:text-slate-100">Figure {idx + 1}</h3>
+              <span className="text-xs text-ink-600 dark:text-slate-400">p.{fig.page_number}</span>
             </div>
             <div className="mt-2 flex items-center gap-2 text-sm">
-              <span className="badge bg-brand-50 text-brand-700">
+              <span className="badge bg-brand-50 text-brand-700 dark:bg-brand-900/40 dark:text-brand-300">
                 {fig.classification ? LABELS[fig.classification] ?? fig.classification : "Unclassified"}
               </span>
               {fig.confidence !== null && (
-                <span className="text-ink-600">Confidence: {Math.round((fig.confidence ?? 0) * 100)}%</span>
+                <span className="text-ink-600 dark:text-slate-400">Confidence: {Math.round((fig.confidence ?? 0) * 100)}%</span>
               )}
             </div>
-            <p className="mt-2 text-sm text-ink-700">{fig.description || "No description generated yet."}</p>
-            {fig.vision_model && <p className="mt-2 text-xs text-ink-500">Model: {fig.vision_model}</p>}
+            <p className="mt-2 text-sm text-ink-700 dark:text-slate-300">{fig.description || "No description generated yet."}</p>
+            {fig.vision_model && <p className="mt-2 text-xs text-ink-500 dark:text-slate-500">Model: {fig.vision_model}</p>}
           </div>
         </div>
       ))}

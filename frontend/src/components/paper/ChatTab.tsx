@@ -41,7 +41,7 @@ export function ChatTab({ paperId }: { paperId: string }) {
     <div className="card flex h-[70vh] flex-col p-5">
       <div className="flex-1 space-y-4 overflow-y-auto pr-1">
         {messages.length === 0 && (
-          <p className="text-sm text-ink-600">
+          <p className="text-sm text-ink-600 dark:text-slate-400">
             Ask a question about this paper, e.g. &ldquo;What is the main contribution?&rdquo; Answers are grounded
             in retrieved excerpts from the paper.
           </p>
@@ -52,7 +52,7 @@ export function ChatTab({ paperId }: { paperId: string }) {
               className={
                 m.role === "user"
                   ? "max-w-[80%] rounded-2xl rounded-br-sm bg-brand-500 px-4 py-2.5 text-sm text-white"
-                  : "max-w-[80%] rounded-2xl rounded-bl-sm bg-slate-100 px-4 py-2.5 text-sm text-ink-900"
+                  : "max-w-[80%] rounded-2xl rounded-bl-sm bg-slate-100 px-4 py-2.5 text-sm text-ink-900 dark:text-slate-100"
               }
             >
               <p className="whitespace-pre-line">{m.content}</p>
@@ -68,10 +68,10 @@ export function ChatTab({ paperId }: { paperId: string }) {
             </div>
           </div>
         ))}
-        {chat.isPending && <p className="text-sm text-ink-600">Thinking...</p>}
+        {chat.isPending && <p className="text-sm text-ink-600 dark:text-slate-400">Thinking...</p>}
       </div>
 
-      {error && <p className="mt-2 text-sm text-red-600">{error}</p>}
+      {error && <p className="mt-2 text-sm text-red-600 dark:text-red-400">{error}</p>}
 
       <form onSubmit={onSubmit} className="mt-4 flex gap-2 border-t border-slate-100 pt-4">
         <input

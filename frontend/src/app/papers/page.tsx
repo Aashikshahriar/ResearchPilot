@@ -45,7 +45,7 @@ function UploadButton() {
       <button className="btn-primary" onClick={() => inputRef.current?.click()} disabled={upload.isPending}>
         {upload.isPending ? "Uploading..." : "Upload paper"}
       </button>
-      {error && <p className="mt-2 text-sm text-red-600">{error}</p>}
+      {error && <p className="mt-2 text-sm text-red-600 dark:text-red-400">{error}</p>}
     </div>
   );
 }
@@ -65,30 +65,30 @@ function PapersContent() {
     <div className="flex flex-col gap-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold text-ink-900">Papers</h1>
-          <p className="mt-1 text-sm text-ink-600">Upload and manage your research library.</p>
+          <h1 className="text-2xl font-semibold text-ink-900 dark:text-slate-100">Papers</h1>
+          <p className="mt-1 text-sm text-ink-600 dark:text-slate-400">Upload and manage your research library.</p>
         </div>
         <UploadButton />
       </div>
 
       {isLoading ? (
-        <div className="text-sm text-ink-600">Loading papers...</div>
+        <div className="text-sm text-ink-600 dark:text-slate-400">Loading papers...</div>
       ) : !data || data.length === 0 ? (
         <EmptyState
           title="No papers yet"
           description="Upload your first PDF to start extracting sections, generating embeddings, and chatting with it."
         />
       ) : (
-        <div className="card divide-y divide-slate-100">
+        <div className="card divide-y divide-slate-100 dark:divide-ink-700">
           {data.map((p) => (
             <Link
               key={p.id}
               href={`/papers/${p.id}`}
-              className="flex items-center justify-between gap-4 px-5 py-4 transition hover:bg-slate-50"
+              className="flex items-center justify-between gap-4 px-5 py-4 transition hover:bg-slate-50 dark:hover:bg-ink-700"
             >
               <div className="min-w-0">
-                <p className="truncate font-medium text-ink-900">{p.title || p.filename}</p>
-                <p className="text-xs text-ink-600">
+                <p className="truncate font-medium text-ink-900 dark:text-slate-100">{p.title || p.filename}</p>
+                <p className="text-xs text-ink-600 dark:text-slate-400">
                   {p.page_count ? `${p.page_count} pages` : "Processing..."} &middot;{" "}
                   {new Date(p.created_at).toLocaleDateString()}
                 </p>

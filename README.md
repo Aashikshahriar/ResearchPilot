@@ -4,7 +4,7 @@ An AI-powered research workspace for uploading academic papers, chatting with th
 
 This is a full-stack portfolio project demonstrating production-oriented application architecture across frontend, backend, database design, LLM integration, RAG, and computer vision.
 
-> **Note on AI providers:** By default the app runs with `LLM_PROVIDER=mock` and `VISION_PROVIDER=mock` — deterministic, dependency-light, offline implementations that perform *real* extractive text analysis and *real* pixel-level image analysis (no canned strings, no network calls), so the whole application is runnable and testable without API keys. Set `LLM_PROVIDER=openai` (with `OPENAI_API_KEY`) and `VISION_PROVIDER=clip` (with `requirements-vision.txt` installed) for production-quality generative answers and neural figure classification. Every part of the app that talks to AI goes through the same abstraction either way — see [LLM Abstraction](#llm-abstraction).
+> **Note on AI providers:** By default the app runs with `LLM_PROVIDER=mock` and `VISION_PROVIDER=mock` — deterministic, dependency-light, offline implementations that perform *real* extractive text analysis and *real* pixel-level image analysis (no canned strings, no network calls), so the whole application is runnable and testable without API keys. For production-quality generation, five real providers are implemented behind the same `LLMProvider`/`VisionProvider` abstractions: **OpenAI**, **Gemini**, **Mistral**, **Groq**, and a pretrained **CLIP** vision model. Set `LLM_FALLBACK_ORDER=gemini,groq,mistral,openai` to chain multiple providers with automatic failover — each is skipped if its API key is missing, and the request falls through to the next on any error (rate limit, outage, bad model name), always ending at the mock provider as a guaranteed-available last resort. Every part of the app that talks to AI goes through the same abstraction either way — see [LLM Abstraction](#8-llm-abstraction).
 
 ---
 
@@ -19,6 +19,10 @@ This is a full-stack portfolio project demonstrating production-oriented applica
 - **Dashboard & search** — workspace-wide stats and full-text search across papers, chunks, and experiments.
 - **Observability** — every AI call (LLM or vision) is recorded as an `ai_inferences` row with latency, token usage, and success/failure.
 - **Strict per-user authorization** — every resource lookup is scoped to `owner_id`/`user_id`; cross-user access returns `404`, never `403` (avoids leaking existence).
+- **Bilingual UI (English/বাংলা)** — a persistent EN/বাং toggle switches navigation, landing, auth, dashboard, and tab chrome between English and Bangla; AI-generated content (chat answers, summaries, figure descriptions) stays in the language the model responded in.
+- **Dark/light mode** — a theme toggle with system-preference detection and no flash-of-wrong-theme on load, persisted per browser.
+- **Development roadmap board** — a drag-and-drop Kanban board (`/board`) tracking the project's own build phases (Paper Management → Document Intelligence → RAG → Vision → Research Features → Production Quality) against To Do / In Progress / Done, persisted in the browser.
+- **PDF analytics export** — download the dashboard's stats and recent activity as a PDF report, generated client-side.
 
 ## 2. Screenshots
 
@@ -227,8 +231,9 @@ PDF → per-page image extraction (PyMuPDF) → filter decorative/tiny images
     → confidence score + natural-language description → stored on Figure row
 ```
 
-Two interchangeable providers implement `VisionProvider`:
+Three interchangeable providers implement `VisionProvider`:
 - **`heuristic-cv` (default, `VISION_PROVIDER=mock`)** — real image analysis (edge density, color variance, background fraction, aspect ratio computed with Pillow/NumPy) mapped to a figure class via explainable rules. No heavy ML dependency required.
+- **Gemini (`VISION_PROVIDER=gemini`)** — real multimodal classification via Gemini's `generateContent` with an inline image and a JSON response schema, returning label + confidence + a natural-language description in one call. Requires `GEMINI_API_KEY`.
 - **CLIP (`VISION_PROVIDER=clip`)** — real zero-shot classification using `openai/clip-vit-base-patch32` via HuggingFace `transformers`. Install `backend/requirements-vision.txt` to enable.
 
 ## 8. LLM Abstraction
@@ -242,10 +247,20 @@ class LLMProvider(ABC):
     def embed(self, texts: list[str]) -> EmbeddingResult: ...
 ```
 
-- `OpenAIProvider` implements this against the real Chat Completions + Embeddings APIs (JSON-schema-constrained structured output for comparisons/metadata extraction).
-- `MockLLMProvider` implements it with deterministic extractive summarization/QA and a hash-based bag-of-words embedding — no network calls, fully offline, used by default and in tests.
+- `OpenAIProvider` — real Chat Completions + Embeddings APIs, JSON-schema-constrained structured output.
+- `GeminiProvider` — Google's `generateContent`/`batchEmbedContents` APIs, also JSON-schema-constrained. Also used for PDF/paper text analysis (summarization, RAG answering) whenever selected, since `paper_service`/`rag_service`/`analysis_service` all call the abstraction generically.
+- `MistralProvider` / `GroqProvider` — OpenAI-compatible chat APIs using JSON-object mode plus an explicit schema instruction in the prompt (neither offers strict schema enforcement). Groq has no embeddings endpoint, so its `embed()` raises and is skipped in a fallback chain.
+- `MockLLMProvider` — deterministic extractive summarization/QA and a hash-based bag-of-words embedding — no network calls, fully offline, used by default and in tests.
 
 No route or service calls a vendor SDK directly — they all depend on `get_llm_provider()`, so adding a new model/vendor means implementing one class.
+
+### Multi-provider fallback
+
+Setting `LLM_FALLBACK_ORDER` (e.g. `gemini,groq,mistral,openai`) makes `get_llm_provider()` return a `FallbackLLMProvider` that wraps the named providers in order — skipping any whose API key isn't set, and always appending `mock` as a guaranteed-available final fallback. On every `generate()`/`generate_structured()`/`embed()` call it tries each provider in turn and falls through to the next on any exception (auth failure, rate limit, bad model name, outage), so a single provider having a bad day doesn't take down summarization or chat.
+
+Because different providers return embeddings of different native dimensions (Gemini `text-embedding-004`/`gemini-embedding-001` → 768/3072, Mistral `mistral-embed` → 1024, OpenAI → 1536) but the pgvector column has one fixed dimension (`EMBEDDING_DIM`, default 1536), every embedding is truncated or zero-padded to that length before storage. This keeps retrieval working end-to-end even as the active provider changes between requests, at the cost of some precision versus using one consistent embedding model throughout — worth knowing if you're chasing maximum retrieval quality rather than resilience.
+
+The `ai_inferences` observability table records which provider actually served each request (e.g. `gemini:gemini-3.6-flash`), not just which chain was configured, so you can see fallbacks happening in practice.
 
 ## 9. API Documentation
 
@@ -322,9 +337,11 @@ See [`.env.example`](.env.example) for the full list. Key ones:
 |---|---|
 | `DATABASE_URL` | SQLAlchemy connection string |
 | `JWT_SECRET_KEY` | Signing key for access tokens — **change in production** |
-| `LLM_PROVIDER` | `mock` (default, offline) or `openai` |
-| `OPENAI_API_KEY` | Required when `LLM_PROVIDER=openai` |
-| `VISION_PROVIDER` | `mock` (default, offline heuristic) or `clip` |
+| `LLM_PROVIDER` | Single-provider mode: `mock` (default) / `openai` / `gemini` / `mistral` / `groq` |
+| `LLM_FALLBACK_ORDER` | Multi-provider mode, e.g. `gemini,groq,mistral,openai` — overrides `LLM_PROVIDER` when set |
+| `OPENAI_API_KEY` / `GEMINI_API_KEY` / `MISTRAL_API_KEY` / `GROQ_API_KEY` | Required for the corresponding provider(s) |
+| `EMBEDDING_DIM` | Fixed pgvector column width; embeddings are normalized to this length |
+| `VISION_PROVIDER` | `mock` (default, offline heuristic) / `gemini` / `clip` |
 | `MAX_UPLOAD_MB` | PDF upload size limit |
 | `BACKEND_CORS_ORIGINS` | Comma-separated allowed origins |
 | `NEXT_PUBLIC_API_URL` | Backend URL the frontend calls |

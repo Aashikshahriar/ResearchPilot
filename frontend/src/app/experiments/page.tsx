@@ -60,31 +60,31 @@ function NewExperimentForm({ onDone }: { onDone: () => void }) {
   return (
     <form onSubmit={onSubmit} className="card grid grid-cols-1 gap-3 p-5 sm:grid-cols-2">
       <div className="sm:col-span-2">
-        <label className="mb-1 block text-sm font-medium text-ink-800">Name</label>
+        <label className="mb-1 block text-sm font-medium text-ink-800 dark:text-slate-300">Name</label>
         <input className="input" required value={name} onChange={(e) => setName(e.target.value)} />
       </div>
       <div>
-        <label className="mb-1 block text-sm font-medium text-ink-800">Model</label>
+        <label className="mb-1 block text-sm font-medium text-ink-800 dark:text-slate-300">Model</label>
         <input className="input" value={model} onChange={(e) => setModel(e.target.value)} />
       </div>
       <div>
-        <label className="mb-1 block text-sm font-medium text-ink-800">Dataset</label>
+        <label className="mb-1 block text-sm font-medium text-ink-800 dark:text-slate-300">Dataset</label>
         <input className="input" value={dataset} onChange={(e) => setDataset(e.target.value)} />
       </div>
       <div>
-        <label className="mb-1 block text-sm font-medium text-ink-800">Learning rate</label>
+        <label className="mb-1 block text-sm font-medium text-ink-800 dark:text-slate-300">Learning rate</label>
         <input className="input" type="number" step="any" value={learningRate} onChange={(e) => setLearningRate(e.target.value)} />
       </div>
       <div>
-        <label className="mb-1 block text-sm font-medium text-ink-800">Batch size</label>
+        <label className="mb-1 block text-sm font-medium text-ink-800 dark:text-slate-300">Batch size</label>
         <input className="input" type="number" value={batchSize} onChange={(e) => setBatchSize(e.target.value)} />
       </div>
       <div>
-        <label className="mb-1 block text-sm font-medium text-ink-800">Epochs</label>
+        <label className="mb-1 block text-sm font-medium text-ink-800 dark:text-slate-300">Epochs</label>
         <input className="input" type="number" value={epochs} onChange={(e) => setEpochs(e.target.value)} />
       </div>
       <div className="sm:col-span-2">
-        <label className="mb-1 block text-sm font-medium text-ink-800">Notes</label>
+        <label className="mb-1 block text-sm font-medium text-ink-800 dark:text-slate-300">Notes</label>
         <textarea className="input" value={notes} onChange={(e) => setNotes(e.target.value)} />
       </div>
       <div className="flex gap-2 sm:col-span-2">
@@ -106,28 +106,28 @@ function ExperimentsContent() {
     <div className="flex flex-col gap-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold text-ink-900">Experiments</h1>
-          <p className="mt-1 text-sm text-ink-600">Track models, hyperparameters, and metrics.</p>
+          <h1 className="text-2xl font-semibold text-ink-900 dark:text-slate-100">Experiments</h1>
+          <p className="mt-1 text-sm text-ink-600 dark:text-slate-400">Track models, hyperparameters, and metrics.</p>
         </div>
       </div>
 
       <NewExperimentForm onDone={() => {}} />
 
       {isLoading ? (
-        <div className="text-sm text-ink-600">Loading experiments...</div>
+        <div className="text-sm text-ink-600 dark:text-slate-400">Loading experiments...</div>
       ) : !data || data.length === 0 ? (
         <EmptyState title="No experiments yet" description="Create one above to start tracking metrics." />
       ) : (
-        <div className="card divide-y divide-slate-100">
+        <div className="card divide-y divide-slate-100 dark:divide-ink-700">
           {data.map((e) => (
-            <Link key={e.id} href={`/experiments/${e.id}`} className="flex items-center justify-between px-5 py-4 hover:bg-slate-50">
+            <Link key={e.id} href={`/experiments/${e.id}`} className="flex items-center justify-between px-5 py-4 hover:bg-slate-50 dark:hover:bg-ink-700">
               <div>
-                <p className="font-medium text-ink-900">{e.name}</p>
-                <p className="text-xs text-ink-600">
+                <p className="font-medium text-ink-900 dark:text-slate-100">{e.name}</p>
+                <p className="text-xs text-ink-600 dark:text-slate-400">
                   {[e.model, e.dataset].filter(Boolean).join(" · ") || "No model/dataset specified"}
                 </p>
               </div>
-              <span className="text-xs text-ink-600">{new Date(e.created_at).toLocaleDateString()}</span>
+              <span className="text-xs text-ink-600 dark:text-slate-400">{new Date(e.created_at).toLocaleDateString()}</span>
             </Link>
           ))}
         </div>
